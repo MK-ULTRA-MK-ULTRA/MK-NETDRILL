@@ -3,12 +3,7 @@
 # MK-NETDRILL
 
 **Networking & Protocol Trainer** — a DIY OverTheWire-style terminal game.
-Cheatsheet · Drills · Live Labs · Daily Challenge · Ranks
-
-![Bash](https://img.shields.io/badge/bash-4%2B-black?style=flat-square&logo=gnubash&logoColor=white)
-![Platform](https://img.shields.io/badge/platform-Linux-black?style=flat-square&logo=linux&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.0.0-black?style=flat-square)
-![Dependencies](https://img.shields.io/badge/pure-bash-black?style=flat-square)
+Cheatsheet · Drills · Live Labs · Daily Challenge
 
 by [MK-ULTRA](https://github.com/MK-ULTRA-MK-ULTRA)
 
@@ -32,7 +27,7 @@ by [MK-ULTRA](https://github.com/MK-ULTRA-MK-ULTRA)
 
 MK-NETDRILL is a single-file bash script that turns learning networking into a game. You get a built-in cheatsheet, flash-card drills, command challenges, subnetting practice, and **live labs** where a real service spins up on your own machine and you hunt the flag with real tools (`ss`, `nmap`, `tcpdump`, `curl`, `nc`).
 
-Answer questions, earn XP, keep your daily streak alive, and climb the ranks from **PACKET KID** to **NETWORK NINJA**.
+Answer questions, use hints when you're stuck, keep your daily streak alive, and watch the progress meter fill as you master questions and complete sections.
 
 No frameworks, no pip installs, no accounts. One script.
 
@@ -54,8 +49,8 @@ No frameworks, no pip installs, no accounts. One script.
 | 10 | **Live Lab** | Hunt a real flag on your own machine (see below) |
 | 11 | **Who owns this IP?** | Quiz plus a lookup tool that runs `whois`, reverse DNS, and `ss` for you |
 | 12 | **Timed Blitz** | 60 seconds, mixed questions from every category |
-| 13 | **Daily Challenge** | 5 questions, same set for everyone each day, bonus XP |
-| 14 | **Rank, stats & log** | XP, accuracy, streaks, recent session log |
+| 13 | **Daily Challenge** | 5 questions, same set for everyone each day |
+| 14 | **Progress, stats & log** | Progress meters, per-section breakdown, accuracy, streaks, recent session log |
 | 15 | **Cheatsheet** | OSI model, common ports, firewall, traffic analysis, OPSEC, proxies/DNS |
 
 ### Live Labs
@@ -68,23 +63,32 @@ Each lab starts a small Python service bound to **127.0.0.1 only** on a random p
 | **Packet Catcher** | Packet capture | Sniff the UDP beacon on loopback with `tcpdump` |
 | **Banner Grab** | HTTP headers | The flag hides in a response header, not the page body |
 
-Three hints per lab. Using hints reduces the XP payout. `skip` reveals the answer.
+Three hints per lab. `skip` reveals the answer.
 
-### Progression
+### Progress meter
 
-- **XP** for every correct answer, with a streak bonus
-- **Day streak** for practicing on consecutive days
-- **Daily bonus** for finishing all 5 daily challenge questions
-- **Lab XP**: more for solving without hints
+The main menu shows two meters that fill as you work:
 
-| Rank | XP needed |
-|------|-----------|
-| PACKET KID | 0 |
-| PORT SCANNER | 150 |
-| SUBNET SNIPER | 400 |
-| SYSADMIN | 800 |
-| PACKET WIZARD | 1400 |
-| NETWORK NINJA | 2200 |
+- **Questions**: a question is mastered the first time you answer it correctly without a reveal-level hint
+- **Sections**: a section is complete when every question in it is mastered (drills, Reverse, IP quiz), you finish every Live Explore prompt, or you capture the flag in a lab (13 sections total)
+
+Correct answers in the Blitz and Daily Challenge count toward mastery too. Drills show unmastered questions first, and option **14** shows a per-section breakdown. Day streak and best answer streak are tracked as well.
+
+### Hints
+
+Type `hint` at any answer prompt (drills, Reverse, IP quiz, Daily) for up to three levels of help:
+
+| Level | What you get | Progress credit |
+|-------|--------------|-----------------|
+| 1 | A nudge for that section (which tool, which flag, where to look in the cheatsheet) | Yes |
+| 2 | Word count, length, and first character of the answer | No |
+| 3 | The answer with every other character masked | No |
+
+Live Explore has its own hints for each prompt, and each lab has 3 hints at the `Flag>` prompt. The Timed Blitz has no hints.
+
+### Quitting
+
+Type `q` at any prompt to go back to the menu, so you never need Ctrl+C to get out of a section.
 
 ---
 
@@ -123,7 +127,7 @@ chmod +x mk-netdrill.sh
 ./mk-netdrill.sh
 ```
 
-Type the number of a mode at the menu. Type `q` inside any drill to return to the menu.
+Type the number of a mode at the menu. Type `q` at any prompt to return to the menu.
 
 ---
 
@@ -133,7 +137,8 @@ Progress is stored locally in `~/.mk-netdrill/`:
 
 | File | Contents |
 |------|----------|
-| `stats` | XP, streaks, best blitz, labs solved |
+| `stats` | Streaks, best blitz, labs solved, accuracy |
+| `progress` | Which questions and sections you've mastered |
 | `session.log` | Timestamped log of every answer |
 
 To wipe your progress, open option **14** and type `reset`, or just delete the folder:
@@ -146,13 +151,13 @@ rm -rf ~/.mk-netdrill
 
 ## Adding Your Own Questions
 
-Questions live in plain bash arrays near the top of the script, in the format:
+Questions live in plain bash arrays in the `DATA` section of the script, in the format:
 
 ```
 "question|answer|explanation"
 ```
 
-Add a line to any array (`FLASH_QS`, `CMD_QS`, `FIREWALL_QS`, `TRAFFIC_QS`, `OPSEC_QS`, `PROXY_QS`, `SUBNET_QS`) and it shows up in that drill, the Blitz, and the Daily Challenge. Don't use the `|` character inside a question, answer, or explanation. IP quiz entries use `ip|owner keywords|owner shown|explanation`.
+Add a line to any array (`FLASH_QS`, `CMD_QS`, `FIREWALL_QS`, `TRAFFIC_QS`, `OPSEC_QS`, `PROXY_QS`, `SUBNET_QS`) and it shows up in that drill, the Blitz, and the Daily Challenge, with hints and progress tracking included automatically. The level 1 hint for each drill comes from the `SECTION_TIP` list in the script. Don't use the `|` character inside a question, answer, or explanation. IP quiz entries use `ip|owner keywords|owner shown|explanation`.
 
 ---
 
